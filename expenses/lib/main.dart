@@ -33,13 +33,13 @@ class ExpenseApp extends StatelessWidget {
           secondary: Colors.amber,
         ),
         textTheme: tema.textTheme.copyWith(
-          titleLarge: const TextStyle(
-            fontFamily: 'OpenSans',
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
+            titleLarge: const TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+            labelLarge: const TextStyle(color: Colors.white)),
         appBarTheme: const AppBarTheme(
           titleTextStyle: TextStyle(
             fontFamily: 'Quicksand',
@@ -61,24 +61,36 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [
-    Transaction(
-      id: 't0',
-      title: 'Conta Antiga',
-      value: 400,
-      date: DateTime.now().subtract(const Duration(days: 33)),
-    ),
-    Transaction(
-      id: 't1',
-      title: 'Novo Tênis de corrida',
-      value: 310.76,
-      date: DateTime.now().subtract(const Duration(days: 3)),
-    ),
-    Transaction(
-      id: 't2',
-      title: 'Conta de Luz',
-      value: 211.3,
-      date: DateTime.now().subtract(const Duration(days: 4)),
-    ),
+    // Transaction(
+    //   id: 't0',
+    //   title: 'Conta Antiga',
+    //   value: 400,
+    //   date: DateTime.now().subtract(const Duration(days: 33)),
+    // ),
+    // Transaction(
+    //   id: 't1',
+    //   title: 'Novo Tênis de corrida',
+    //   value: 310.76,
+    //   date: DateTime.now().subtract(const Duration(days: 3)),
+    // ),
+    // Transaction(
+    //   id: 't2',
+    //   title: 'Conta de Luz',
+    //   value: 211.3,
+    //   date: DateTime.now().subtract(const Duration(days: 4)),
+    // ),
+    // Transaction(
+    //   id: 't3',
+    //   title: 'Contao de crédito',
+    //   value: 1000000,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: 't4',
+    //   title: 'Conta de gas',
+    //   value: 11.3,
+    //   date: DateTime.now(),
+    // ),
   ];
 
   List<Transaction> get _recentTransactions {
@@ -89,18 +101,28 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  _addTransaction({required String title, required double value}) {
+  _addTransaction({
+    required String title,
+    required double value,
+    required DateTime date,
+  }) {
     final newTransaction = Transaction(
         id: Random().nextDouble().toString(),
         title: title,
         value: value,
-        date: DateTime.now());
+        date: date);
 
     setState(() {
       _transactions.add(newTransaction);
     });
 
     Navigator.of(context).pop();
+  }
+
+  _removeTransaction(String id) {
+    setState(() {
+      _transactions.removeWhere((tr) => tr.id == id);
+    });
   }
 
   _openTransasctionFormModal(BuildContext context) {
@@ -134,12 +156,16 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TransactionList(
               transactions: _transactions,
+              onRemove: _removeTransaction,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
         onPressed: () => _openTransasctionFormModal(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
