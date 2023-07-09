@@ -8,17 +8,26 @@ import 'package:shop/models/order.dart';
 import 'package:shop/utils/constants.dart';
 
 class OrderList with ChangeNotifier {
-  final List<Order> _items = [];
+  final String _token;
+  final String _userId;
+  final List<Order> _items;
+
+  OrderList([
+    this._token = '',
+    this._userId = '',
+    this._items = const [],
+  ]);
 
   List<Order> get items => [..._items];
 
   int get itemsCount => _items.length;
 
   Future<void> loadOrders() async {
-    _items.clear();
+    //_items.clear();
+    List<Order> items = [];
 
     final response = await http.get(
-      Uri.parse('${Contants.orderBaseUrl}.json'),
+      Uri.parse('${Contants.orderBaseUrl}/$_userId.json?auth=$_token'),
     );
     if (response.body == 'null') return;
 
@@ -26,7 +35,7 @@ class OrderList with ChangeNotifier {
 
     data.forEach(
       (orderId, orderData) {
-        _items.add(
+        items.add(
           Order(
             id: orderId,
             date: DateTime.parse(orderData['date']),
@@ -47,6 +56,9 @@ class OrderList with ChangeNotifier {
       },
     );
 
+    _items.clear();
+    _items.addAll(items.reversed.toList());
+
     notifyListeners();
   }
 
@@ -54,7 +66,7 @@ class OrderList with ChangeNotifier {
     final date = DateTime.now();
 
     final response = await http.post(
-      Uri.parse('${Contants.orderBaseUrl}.json'),
+      Uri.parse('${Contants.orderBaseUrl}/$_userId.json?auth=$_token'),
       body: jsonEncode(
         {
           "total": cart.totalAmount,
